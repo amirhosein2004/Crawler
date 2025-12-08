@@ -6,6 +6,7 @@ configs for crawler
 """
 
 import os
+import json
 
 
 # base url
@@ -63,13 +64,15 @@ def load_coordinates():
                 continue
 
             try:
-                # Parse "lat,long" format
-                parts = line.split(",")
-                if len(parts) == 2:
-                    lat = float(parts[0].strip())
-                    lng = float(parts[1].strip())
+                # Remove trailing comma if present
+                line = line.rstrip(',')
+                # Parse JSON format: { "lat": value, "lng": value }
+                data = json.loads(line)
+                if "lat" in data and "lng" in data:
+                    lat = float(data["lat"])
+                    lng = float(data["lng"])
                     coordinates.append((lat, lng))
-            except ValueError:
+            except (ValueError, json.JSONDecodeError):
                 print(f"Warning: Could not parse line: {line}")
                 continue
 
